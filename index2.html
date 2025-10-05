@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NASA Knowledge Dashboard</title>
+<img id="stellaLucidaLogo" src="logo.jpg" alt="Stella Lucida Logo">
+<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<style>
+    /* Dashboard Styles: Modern, Space-Themed Aesthetic */
+    :root {
+        --primary-dark: #0A0A1F; /* Deep Space Blue */
+        --secondary-dark: #1F2847; /* Slightly Lighter Panel Color */
+        --accent-light: #5B9AFF; /* Bright Blue for Interaction */
+        --text-light: #E0E0FF; /* Light, readable text */
+        --card-bg: rgba(255, 255, 255, 0.05); /* Subtle Glass Effect */
+        --success-chat: #2ecc71; /* Green for bot success */
+    }
+    
+    body {
+        /* Default background is now deep space blue, overlayed by particles */
+        background-color: var(--primary-dark);
+        color: var(--text-light);
+        font-family: 'Open Sans', sans-serif;
+        overflow-x: hidden; /* Prevent horizontal scroll from particles */
+    }
+
+    /* Particle Background Styling */
+    #particles-js {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 0;
+    }
+
+    .overlay {
+        position: relative; /* Essential for content to sit on top of particles */
+        background-color: rgba(0, 0, 30, 0.7); /* Slightly transparent to see particles */
+        min-height: 100vh;
+        padding: 20px;
+        z-index: 1; 
+    }
+    
+    h1, h3 {
+        font-weight: 700;
+        color: white;
+        text-shadow: 0 0 10px var(--accent-light); /* Stronger glow */
+    }
+
+    /* Logo Styling */
+    .logo-container {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+    #stellaLucidaLogo {
+        width: 100px; /* Adjust size as needed */
+        height: 100px;
+        border-radius: 50%; /* Rounded edges */
+        object-fit: cover; /* Ensures image covers the area */
+        border: 3px solid var(--accent-light); /* Subtle border matching the theme */
+        box-shadow: 0 0 15px rgba(91, 154, 255, 0.7); /* Light glow */
+    }
+
+    /* Header/Mission Brief Styling */
+    .mission-brief {
+        background: linear-gradient(135deg, var(--secondary-dark), #101530);
+        padding: 30px;
+        margin-bottom: 40px;
+        border-radius: 15px;
+        border: 2px solid var(--accent-light);
+        box-shadow: 0 0 20px rgba(91, 154, 255, 0.5);
+    }
+    .mission-brief p {
+        font-weight: 300;
+        font-size: 1.1rem;
+    }
+
+    /* Search Bar Styling */
+    #searchInput {
+        width: 80%;
+        font-size: 1.2rem;
+        padding: 12px;
+        background-color: var(--secondary-dark);
+        border: 1px solid var(--accent-light);
+        color: var(--text-light);
+        border-right: none;
+        border-radius: 50px 0 0 50px; 
+    }
+    #searchButton {
+        padding: 12px 25px;
+        font-size: 1.1rem;
+        background-color: var(--accent-light);
+        border: 1px solid var(--accent-light);
+        transition: all 0.3s ease;
+        border-radius: 0 50px 50px 0;
+    }
+    #searchButton:hover {
+        background-color: #7AAFFF;
+        box-shadow: 0 0 15px var(--accent-light);
+    }
+
+    /* Result Card Styling */
+    .result-card {
+        background-color: rgba(91, 154, 255, 0.1); 
+        border-radius: 10px;
+        padding: 20px;
+        margin-bottom: 15px;
+        border-left: 5px solid var(--accent-light);
+        transition: transform 0.2s;
+    }
+    .result-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(91, 154, 255, 0.3);
+    }
+    .result-card h2 {
+        font-size: 1.5rem;
+        color: var(--accent-light);
+    }
+    .result-card p {
+        color: #C0C0E0;
+    }
+    
+    /* --- Modal Styles: Details Tab --- */
+    .modal-content {
+        background-color: var(--secondary-dark); /* Dark panel background */
+        border: 2px solid var(--accent-light);
+        border-radius: 10px;
+        box-shadow: 0 0 25px rgba(91, 154, 255, 0.5);
+        color: var(--text-light);
+    }
+    .modal-header {
+        border-bottom: 1px solid var(--accent-light);
+    }
+    .modal-title {
+        color: white;
+        font-weight: 700;
+    }
+    .modal-footer {
+        border-top: none;
+    }
+    .close-btn {
+        background-color: var(--accent-light);
+        color: var(--primary-dark);
+        font-weight: 600;
+    }
+    .close-btn:hover {
+        background-color: #7AAFFF;
+    }
+
+    /* --- Chatbot Styles: Integrated Look --- */
+    #open-chatbot {
+        background-color: var(--success-chat);
+        box-shadow: 0 4px 12px rgba(46, 204, 113, 0.5);
+    }
+    #chatbot-container {
+        background-color: var(--primary-dark);
+        border: 1px solid var(--success-chat);
+    }
+    #chatbot-header {
+        background-color: var(--secondary-dark);
+        border-bottom: 1px solid var(--success-chat);
+    }
+    #chatbot-body {
+        background-color: #151D36; 
+    }
+    .bot-message {
+        background-color: var(--secondary-dark) !important;
+        color: var(--text-light) !important;
+    }
+    .user-message {
+        background-color: var(--success-chat) !important;
+        color: var(--primary-dark) !important;
+    }
+    #chatbot-footer {
+        background-color: var(--secondary-dark);
+    }
+    #chatbot-input {
+        background-color: #0A0A1F;
+        border: 1px solid var(--secondary-dark);
+        color: var(--text-light);
+    }
+    #chatbot-send-btn {
+        background-color: var(--success-chat) !important;
+    }
+
+</style>
+</head>
+<body>
+
+<div id="particles-js"></div> 
+
+<div class="overlay">
+    <div class="container py-5 position-relative">
+        
+        <button class="btn btn-sm btn-outline-light position-absolute top-0 end-0 mt-3 me-3" 
+                data-bs-toggle="modal" data-bs-target="#detailsModal" 
+                style="border-color: var(--accent-light); color: var(--accent-light);">
+            Details &#x2139;
+        </button>
+
+        <div class="text-center">
+            <div class="logo-container">
+                <img id="stellaLucidaLogo" src="logo.jpg" alt="Stella Lucida Logo">
+            </div>
+            
+            <h1 class="mb-3">NASA Knowledge Dashboard</h1>
+        </div>
+        
+        <div class="mission-brief text-start mx-auto w-75">
+            <h4 style="color: var(--accent-light); font-weight: 600;">MISSION BRIEF: Synthesis Engine</h4>
+            <p>This dashboard is your interface to cutting-edge research across NASA's biomedical and physical sciences. Use the search bar below to query the knowledge base and filter results instantly.</p>
+        </div>
+
+        <div class="input-group mb-5 w-75 mx-auto">
+            <input type="text" id="searchInput" class="form-control" placeholder="Search for research topics (e.g., microgravity, immunity, cancer)...">
+            <button class="btn btn-primary" type="button" id="searchButton">Search</button>
+        </div>
+
+        <h3 class="mt-5 mb-3 text-center">Knowledge Base Results</h3>
+        <div id="results" class="text-start">
+            <p class="text-center text-muted">Enter a search term above to see results.</p>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="detailsModal" tabindex="-1" aria-labelledby="detailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="detailsModalLabel">Team STELLA LUCIDA Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="filter: invert(1) grayscale(1) brightness(2);"></button>
+            </div>
+            <div class="modal-body">
+                <p><strong style="color: var(--accent-light);">Creator:</strong> Team STELLA LUCIDA</p>
+                <p><strong style="color: var(--accent-light);">Members:</strong></p>
+                <ul>
+                    <li>Shriya Shah</li>
+                    <li>Shriyan Tandale</li>
+                    <li>Radha Odhekar</li>
+                    <li>Tirth Mendapara</li>
+                </ul>
+                <p><strong style="color: var(--accent-light);">More About Us:</strong> -</p>
+                <p><strong style="color: var(--accent-light);">MAILS:</strong></p>
+                <ul>
+                    <li><a href="mailto:samplayerpro2930@gmail.com" style="color: var(--text-light);">samplayerpro2930@gmail.com</a></li>
+                    <li><a href="mailto:shriyashah152011@gmail.com" style="color: var(--text-light);">shriyashah152011@gmail.com</a></li>
+                </ul>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn close-btn" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script> 
+<script>
+    // --- PARTICLE.JS CONFIGURATION (Starfield Effect) ---
+    particlesJS('particles-js', {
+        "particles": {
+            "number": {
+                "value": 80,
+                "density": {
+                    "enable": true,
+                    "value_area": 800
+                }
+            },
+            "color": {
+                "value": "#ffffff"
+            },
+            "shape": {
+                "type": "circle",
+                "stroke": {
+                    "width": 0,
+                    "color": "#000000"
+                },
+                "polygon": {
+                    "nb_sides": 5
+                }
+            },
+            "opacity": {
+                "value": 0.5,
+                "random": false,
+                "anim": {
+                    "enable": false,
+                    "speed": 1,
+                    "opacity_min": 0.1,
+                    "sync": false
+                }
+            },
+            "size": {
+                "value": 3,
+                "random": true,
+                "anim": {
+                    "enable": false,
+                    "speed": 40,
+                    "size_min": 0.1,
+                    "sync": false
+                }
+            },
+            "line_linked": {
+                "enable": false,
+            },
+            "move": {
+                "enable": true,
+                "speed": 1,
+                "direction": "none",
+                "random": false,
+                "straight": false,
+                "out_mode": "out",
+                "bounce": false,
+                "attract": {
+                    "enable": false,
+                    "rotateX": 600,
+                    "rotateY": 1200
+                }
+            }
+        },
+        "interactivity": {
+            "detect_on": "canvas",
+            "events": {
+                "onhover": {
+                    "enable": true,
+                    "mode": "repulse"
+                },
+                "onclick": {
+                    "enable": true,
+                    "mode": "push"
+                },
+                "resize": true
+            },
+            "modes": {
+                "grab": {
+                    "distance": 400,
+                    "line_linked": {
+                        "opacity": 1
+                    }
+                },
+                "bubble": {
+                    "distance": 400,
+                    "size": 40,
+                    "duration": 2,
+                    "opacity": 8,
+                    "speed": 3
+                },
+                "repulse": {
+                    "distance": 100,
+                    "duration": 0.4
+                },
+                "push": {
+                    "particles_nb": 4
+                },
+                "remove": {
+                    "particles_nb": 2
+                }
+            }
+        },
+        "retina_detect": true
+    });
+
+
+    // --- KNOWLEDGE BASE & MAIN LOGIC ---
+
+    const CHATBOT_KNOWLEDGE_BASE = [
+        {
+            title: 'GGG400349 1..12: Immune Suppressive Vesicle Proteins',
+            summary: 'GENOME REPORT: Immune Suppressive Extracellular Vesicle Proteins of Leptopilina heterotoma are encoded in the wasp genome. Leptopilina heterotoma are obligate parasitoid wasps that introduce venom containing mixed-strategy extracellular vesicles (MSEVs) for immune suppression.',
+            keywords: ["proteins", "biology", "heterotoma", "immunity", "wasps", "hosts", "venom", "msevs", "immune", "vesicle", "genome", "parasitoid", "functions", "origin"]
+        },
+        {
+            title: 'Epinephrine in Otoendoscopic Surgery',
+            summary: 'Research on the Effect of Different Concentrations of Epinephrine in Otoendoscopic Surgery on Surgical Field Clarity. The objective was to compare the effect of subcutaneous injection of epinephrine/physiological saline into the external auditory canal (EAC) on surgical field clarity and hemodynamics.',
+            keywords: ["surgery", "otoendoscopic", "field", "clarity", "injection", "concentrations", "epinephrine", "anesthesia", "patients", "hemodynamics"]
+        },
+        {
+            title: 'Regulation of Hemocytes in Drosophila',
+            summary: 'Regulation of Hemocytes in Drosophila Requires dappled Cytochrome b5. Mutations of the dappled gene (which encodes cytochrome b5) cause melanotic nodules and hemocyte misregulation. Curcumin enhances the dappled melanotic phenotype.',
+            keywords: ["regulation", "gene", "hemocytes", "tumors", "nodules", "blood", "cells", "hemoprotein", "mutations", "phenotype", "cytochrome"]
+        },
+        {
+            title: 'Prostate Cancer Supplements Study',
+            summary: 'Nutritional supplements, COX-2 and IGF-1 expression in men on active surveillance for prostate cancer. A trial of lycopene and fish oil supplements versus placebo showed no difference in the change from baseline for IGF-1 or COX-2 gene expression.',
+            keywords: ["men", "cancer", "placebo", "supplements", "prostate", "oil", "expression", "lycopene", "gene", "surveillance", "trial", "pathways", "acids"]
+        },
+        {
+            title: 'Leptin receptor-deficient murine macrophage cell line',
+            summary: 'Establishment and characterization of DB-1: a leptin receptor-deficient murine macrophage cell line. Leptin is an adipokine key to immune system regulation. The cell line was created to investigate the link between leptin and innate immunity.',
+            keywords: ["macrophage", "cell", "line", "leptin", "cells", "immune", "bone", "marrow", "metabolism", "regulation", "immunity", "mice"]
+        },
+        {
+            title: 'Microgravity and Yeast Colonies Study',
+            summary: 'Physical Forces Modulate Oxidative Status and Stress Defense in Yeast Colonies: Spaceflight and Microgravity Simulations. Giant yeast colonies are used to study biomedical processes. Both true and simulated microgravity exacerbated cellular redox responses and apoptosis.',
+            keywords: ["colonies", "stress", "response", "yeast", "microgravity", "defense", "forces", "adaptation", "simulations", "convection", "shear", "gravity", "apoptosis", "redox"]
+        },
+        {
+            title: 'GSK3 and Spaceflight Muscle Loss',
+            summary: 'Toward countering muscle and bone loss with spaceflight: GSK3 as a potential target. Spaceflight reduced GSK3b content and bone mineral density in mice. GSK3 muscle knockdown (GSK3mKD) preserved muscle strength and increased tibia bone mineral density.',
+            keywords: ["muscle", "bone", "loss", "target", "spaceflight", "GSK3", "days", "density", "reduction", "mice", "strength", "tibia", "murine"]
+        },
+        {
+            title: 'Squid-Vibrio Symbiosis in Microgravity',
+            summary: 'Modeled microgravity alters apoptotic gene expression and caspase activity in the squid-vibrio symbiosis. Microgravity perturbs animal physiology and impacts microbiome interactions. The study found heightened caspase activity in the bobtail squid/Vibrio fischeri mutualism, which could be mitigated using caspase inhibitors.',
+            keywords: ["microgravity", "expression", "apoptosis", "gene", "activity", "caspase", "symbiosis", "gravity", "microbes", "spaceflight", "animal", "physiology", "squid", "vibrio", "death", "inhibitors"]
+        },
+        {
+            title: 'MSCs and Osmolarity Adaptation',
+            summary: 'This document discusses mechanosensitive channels (MSCs) and their role as "emergency release valves" in organisms adapting to changes in osmolarity, particularly in response to high osmotic stress. These channels help cells cope with pressure and are found in various microbes.',
+            keywords: ["families", "mscs", "channels", "emergency", "release", "valves", "sciences", "physiology", "osmolarity", "proteins", "adaptations", "mscl", "bootha", "paul", "blountb", "school", "university", "kingdom", "department", "center", "dallas", "organisms", "exposure", "decrease", "atmospheres", "pressure", "build", "cell", "mechanism", "pressures", "hence", "microbes"]
+        }
+    ];
+    
+    // --- Search Functionality ---
+
+    function fetchResults() {
+        let resultsHTML = '';
+        const searchInput = document.getElementById("searchInput").value;
+        const searchWords = searchInput.toLowerCase().split(/\s+/).filter(w => w.length > 2);
+        
+        if (!searchInput.trim()) {
+             resultsHTML = `<p class="text-center text-muted">Enter a search term above to see results.</p>`;
+        } else {
+            const matchedDocs = CHATBOT_KNOWLEDGE_BASE
+                .map(doc => {
+                    // Calculate a simple match score
+                    const matchScore = doc.keywords.filter(kw => searchWords.includes(kw)).length;
+                    return { ...doc, score: matchScore };
+                })
+                .filter(doc => doc.score > 0)
+                .sort((a, b) => b.score - a.score);
+
+            if (matchedDocs.length > 0) {
+                matchedDocs.forEach(doc => {
+                    resultsHTML += `
+                        <div class="result-card">
+                            <h2>${doc.title} <span class="badge bg-primary float-end">Relevance: ${doc.score}</span></h2>
+                            <p>${doc.summary.substring(0, 200)}...</p>
+                            <small class="text-muted">Keywords: ${doc.keywords.slice(0, 5).join(', ')}...</small>
+                        </div>
+                    `;
+                });
+            } else {
+                 resultsHTML = `<div class="result-card bg-danger bg-opacity-10 border-danger border-left-4">
+                    <h2>No Documents Found</h2>
+                    <p>Your search for **${searchInput}** did not match any documents in the knowledge base. Try different terms or use the chatbot for guidance.</p>
+                </div>`;
+            }
+        }
+
+        document.getElementById("results").innerHTML = resultsHTML;
+    }
+
+    // Event Listeners for Search
+    document.getElementById("searchButton").onclick = function() {
+        fetchResults();
+    };
+    
+    document.getElementById("searchInput").addEventListener("keypress", function(event) {
+        if (event.key === "Enter") {
+            document.getElementById("searchButton").click();
+        }
+    });
+
+    // --- Chatbot Logic ---
+    function createMessageElement(text, sender) {
+        const messageDiv = document.createElement('div');
+        messageDiv.classList.add('message');
+        if (sender === 'user') {
+            messageDiv.classList.add('user-message');
+            messageDiv.style.cssText = 'max-width: 80%; padding: 8px 12px; border-radius: 15px; border-bottom-right-radius: 2px; align-self: flex-end;';
+        } else {
+            messageDiv.classList.add('bot-message');
+            messageDiv.style.cssText = 'max-width: 80%; padding: 8px 12px; border-radius: 15px; border-bottom-left-radius: 2px; align-self: flex-start;';
+        }
+        messageDiv.innerHTML = `<p>${text}</p>`;
+        return messageDiv;
+    }
+
+    function generateChatbotResponse(userQuestion) {
+        const lowerQuestion = userQuestion.toLowerCase().replace(/[^\w\s]/g, '');
+        const questionWords = lowerQuestion.split(/\s+/).filter(word => word.length > 2); 
+
+        let bestMatch = null;
+        let maxMatchScore = 0;
+
+        for (const doc of CHATBOT_KNOWLEDGE_BASE) {
+            let currentScore = 0;
+            const docSummaryLower = doc.summary.toLowerCase().replace(/[^\w\s]/g, '');
+
+            const matchedKeywords = doc.keywords.filter(kw => lowerQuestion.includes(kw.toLowerCase()));
+            currentScore += matchedKeywords.length * 5; 
+
+            const matchedContextWords = questionWords.filter(qWord => docSummaryLower.includes(qWord));
+            currentScore += matchedContextWords.length * 1; 
+
+            if (currentScore > maxMatchScore) {
+                maxMatchScore = currentScore;
+                bestMatch = doc;
+            }
+        }
+
+        if (maxMatchScore > 0) {
+            const matchedKeywords = bestMatch.keywords.filter(kw => lowerQuestion.includes(kw.toLowerCase()));
+            
+            let response = `**The most relevant document is: ${bestMatch.title}.**<br><br>`;
+            response += `**Summary:** ${bestMatch.summary}<br><br>`;
+            response += `*This was found using the keywords: ${matchedKeywords.join(', ')}*`;
+            return response;
+        } else {
+            const allKeywords = CHATBOT_KNOWLEDGE_BASE.flatMap(doc => doc.keywords.slice(0, 3)).filter((value, index, self) => self.indexOf(value) === index).slice(0, 10).join(', ');
+            return `I'm sorry, I couldn't find a direct match for *"${userQuestion}"* in my current knowledge base. <br><br>My knowledge covers topics like: **${allKeywords}**, and more. Try rephrasing your question using these terms.`;
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const chatBody = document.getElementById('chatbot-body');
+        const chatInput = document.getElementById('chatbot-input');
+        const sendBtn = document.getElementById('chatbot-send-btn');
+        const openBtn = document.getElementById('open-chatbot');
+        const closeBtn = document.getElementById('close-chatbot');
+        const chatContainer = document.getElementById('chatbot-container');
+
+        const sendMessage = () => {
+            const userQuestion = chatInput.value.trim();
+            if (userQuestion === '') return;
+
+            chatBody.appendChild(createMessageElement(userQuestion, 'user'));
+            chatBody.scrollTop = chatBody.scrollHeight;
+            chatInput.value = '';
+
+            setTimeout(() => {
+                const botResponseText = generateChatbotResponse(userQuestion);
+                chatBody.appendChild(createMessageElement(botResponseText, 'bot'));
+                chatBody.scrollTop = chatBody.scrollHeight;
+            }, 500);
+        };
+
+        sendBtn.addEventListener('click', sendMessage);
+        chatInput.addEventListener('keypress', (event) => {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        });
+
+        openBtn.addEventListener('click', () => {
+            chatContainer.style.display = 'flex';
+            openBtn.style.display = 'none';
+        });
+
+        closeBtn.addEventListener('click', () => {
+            chatContainer.style.display = 'none';
+            openBtn.style.display = 'flex';
+        });
+    });
+</script>
+
+<button id="open-chatbot" style="position: fixed; bottom: 20px; right: 20px; width: 60px; height: 60px; border-radius: 50%; color: white; border: none; font-size: 1.5rem; z-index: 1001; cursor: pointer; display: flex; justify-content: center; align-items: center;">
+    &#x1F4AC;
+</button>
+
+<div id="chatbot-container" style="position: fixed; bottom: 20px; right: 20px; width: 350px; height: 450px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4); z-index: 1000; display: none; flex-direction: column; overflow: hidden;">
+    <div id="chatbot-header" style="color: white; padding: 10px; border-top-left-radius: 10px; border-top-right-radius: 10px; cursor: pointer; display: flex; justify-content: space-between; align-items: center;">
+        <h5 style="margin: 0; font-weight: 600;">Knowledge Bot</h5>
+        <span id="close-chatbot" style="font-size: 1.5rem; line-height: 1; cursor: pointer;">&times;</span>
+    </div>
+
+    <div id="chatbot-body" style="flex-grow: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px;">
+        <div class="message bot-message" style="max-width: 80%; padding: 8px 12px; border-radius: 15px; border-bottom-left-radius: 2px; align-self: flex-start;">
+            <p>Hello! I can answer questions about the documents on this page. Try asking about **immune proteins** or the **Drosophila gene** for a quick answer!</p>
+        </div>
+    </div>
+
+    <div id="chatbot-footer" style="padding: 10px; display: flex;">
+        <input type="text" id="chatbot-input" placeholder="Ask me a question..." style="flex-grow: 1; padding: 8px; border-radius: 5px; margin-right: 8px;">
+        <button id="chatbot-send-btn" style="padding: 8px 12px; color: white; border: none; border-radius: 5px; cursor: pointer;">Send</button>
+    </div>
+</div>
+
+</body>
+</html>
